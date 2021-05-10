@@ -4,6 +4,7 @@ using System.IO;
 using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ChaosInitiative.SDKLauncher.Models;
@@ -11,12 +12,12 @@ using ChaosInitiative.SDKLauncher.Util;
 using ChaosInitiative.SDKLauncher.ViewModels;
 using MessageBox.Avalonia;
 using ReactiveUI;
+using Steamworks;
 
 namespace ChaosInitiative.SDKLauncher.Views
 {
     public class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
-
         protected Button EditProfileButton => this.FindControl<Button>("EditProfileButton");
         protected Button OpenToolsModeButton => this.FindControl<Button>("OpenToolsModeButton");
         protected Button OpenGameButton => this.FindControl<Button>("OpenGameButton");
@@ -27,12 +28,12 @@ namespace ChaosInitiative.SDKLauncher.Views
         {
             get
             {
-                string arguments = "";
+                var arguments = "";
 
                 var additionalMount = ViewModel.CurrentProfile.AdditionalMount;
-
-                if (additionalMount is not null && 
-                    !string.IsNullOrWhiteSpace(additionalMount.BinDirectory))
+                
+                if (additionalMount is not null &&
+                    !string.IsNullOrWhiteSpace(additionalMount.PrimarySearchPathDirectory))
                 {
                     arguments = $"-mountmod \"{additionalMount.PrimarySearchPathDirectory}\"";
                 }
@@ -43,8 +44,8 @@ namespace ChaosInitiative.SDKLauncher.Views
 
                 return arguments;
             }
-        } 
-        
+        }
+
         public MainWindow()
         {
             AvaloniaXamlLoader.Load(this);
@@ -52,27 +53,34 @@ namespace ChaosInitiative.SDKLauncher.Views
 
             this.WhenActivated(disposables =>
             {
+                // This sets up all the correct paths to use to launch the tools and game
+                // Note: This looks like it won't work here, but it really does, I promise
+                //       Moving it outside this function crashes the application on load
+                InitializeSteamClient((uint)ViewModel.CurrentProfile.Mod.Mount.AppId);
+                
                 ViewModel.OnClickEditProfile.Subscribe(_ => EditProfile()).DisposeWith(disposables);
-                ViewModel.OnClickOpenHammer.Subscribe(_ => LaunchTool("hammer", 
-                                                                      HammerArguments, 
-                                                                      true))
-                         .DisposeWith(disposables);
-                ViewModel.OnClickOpenModelViewer.Subscribe(_ => 
-                                                               LaunchTool("hlmv", 
-                                                                          $"-game {CurrentProfile.Mod.Mount.PrimarySearchPath}", 
-                                                                          true, 
-                                                                          CurrentProfile.Mod.Mount.MountPath))
-                         .DisposeWith(disposables);
+                ViewModel.OnClickOpenHammer.Subscribe(_ => 
+                    LaunchTool(
+                        "hammer",
+                        Tools.Hammer
+                    )
+                ).DisposeWith(disposables);
+                ViewModel.OnClickOpenModelViewer.Subscribe(_ =>
+                    LaunchTool(
+                        "hlmv",
+                        Tools.ModelViewer,
+                        true,
+                        ViewModel.CurrentProfile.Mod.Mount.MountPath
+                    )
+                ).DisposeWith(disposables);
 
-                ViewModel.OnClickLaunchGame.Subscribe(_ => LaunchGame(false));
-                ViewModel.OnClickLaunchToolsMode.Subscribe(_ => LaunchGame(true));
-
+                ViewModel.OnClickLaunchGame.Subscribe(_ => LaunchGame());
             });
-            
+
             Closing += OnClosing;
         }
 
-        private void LaunchTool(string executableName, string args = "", bool windowsOnly = false, string workingDir = null, string binDir = null, bool allowProton = true)
+        private void LaunchTool(string executableName, Tools tool, bool windowsOnly = false, string workingDir = null, string binDir = null, bool allowProton = true)
         {
             binDir ??= ViewModel.CurrentProfile.Mod.Mount.BinDirectory;
             workingDir ??= binDir;
@@ -83,9 +91,16 @@ namespace ChaosInitiative.SDKLauncher.Views
                 workingDir = binDir;
             }
             
+            string args = tool switch
+            {
+                Tools.Hammer => HammerArguments,
+                Tools.ModelViewer => $"-game {ViewModel.CurrentProfile.Mod.Mount.PrimarySearchPath}",
+                _ => ""
+            };
+
             try
             {
-                var process = ToolsUtil.LaunchTool(binDir, executableName, args, windowsOnly, workingDir);
+                ToolsUtil.LaunchTool(binDir, executableName, args, windowsOnly, workingDir);
             }
             catch (ToolsLaunchException e)
             {
@@ -93,61 +108,10 @@ namespace ChaosInitiative.SDKLauncher.Views
             }
         }
 
-        private void LaunchGame(bool toolsMode)
+        private void LaunchGame()
         {
-            string binDir = CurrentProfile.Mod.Mount.BinDirectory;
-            string executableName = CurrentProfile.Mod.ExecutableName;
-            string gameRootPath = CurrentProfile.Mod.Mount.MountPath;
-
-            if (OperatingSystem.IsWindows())
-            {
-                executableName += ".exe";
-            } 
-            else if (OperatingSystem.IsLinux())
-            {
-                executableName += ".sh";
-            }
-            else if (OperatingSystem.IsLinux())
-            {
-                executableName += ".sh";
-            }
-
-            string binPath = Path.Combine(binDir, executableName);
-            
-            // See if the binary is in bin folder
-            if (!File.Exists(binPath))
-            {
-                // Not in a chaos game. Try to find it in game root. Yes copy paste code i know. It's minimal, nobody cares
-                binPath = Path.Combine(gameRootPath, executableName);
-
-                if (!File.Exists(binPath))
-                {
-                    // Can't find the game bruh
-                    var msgBox = MessageBoxManager.GetMessageBoxStandardWindow("Failed to launch game", 
-                                                                               $"Unable to find game binary '{binPath}'");
-                    msgBox.ShowDialog(this);
-                    return;
-                }
-            }
-            
-            string args = $"{CurrentProfile.Mod.LaunchArguments} -game {CurrentProfile.Mod.Mount.PrimarySearchPath}";
-            if (toolsMode)
-            {
-                args += " -tools";
-            }
-            if (!string.IsNullOrWhiteSpace(CurrentProfile.AdditionalMount.MountPath))
-            {
-                args += $" -mountmod \"{Path.Combine(CurrentProfile.AdditionalMount.MountPath, CurrentProfile.AdditionalMount.PrimarySearchPath)}\"";
-            }
-
-            try
-            {
-                LaunchTool(executableName, 
-                           args,
-                           false,
-                           gameRootPath,
-                           binDir);
-            } catch(Exception) { }
+            var launchGame = new LaunchGameWindow(ViewModel.CurrentProfile);
+            launchGame.ShowDialog(this);
         }
 
         private void OnClosing(object sender, CancelEventArgs e)
@@ -157,13 +121,40 @@ namespace ChaosInitiative.SDKLauncher.Views
 
         private void EditProfile()
         {
-            ProfileConfigWindow profileConfigWindow = new ProfileConfigWindow
+            var profileConfigWindow = new ProfileConfigWindow
             {
                 DataContext = new ProfileConfigViewModel(CurrentProfile)
             };
             profileConfigWindow.ShowDialog(this);
         }
-        
-        
+
+        private static void InitializeSteamClient(uint appId)
+        {
+            if (Application.Current.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                throw new Exception("Wrong application lifetime, contact a developer");
+            }
+
+            try
+            {
+                SteamClient.Init(appId);
+            }
+            catch (Exception e)
+            {
+                if (!e.Message.Contains("Steam"))
+                    throw;
+
+                // TODO: This doesn't work well with i3wm
+                desktop.MainWindow = new NotificationDialog("Steam error. Please check that steam is running, and you own the intended app.");
+                Directory.CreateDirectory("logs");
+                File.WriteAllText($"logs/steam_error_{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log", e.Message);
+            }
+        }
+
+        private enum Tools
+        {
+            Hammer,
+            ModelViewer
+        }
     }
 }

@@ -48,7 +48,7 @@ namespace ChaosInitiative.SDKLauncher.Models
             }
         }
         private int _appId;
-        public int AppId 
+        public int AppId
         {
             get => _appId;
             set
@@ -94,7 +94,7 @@ namespace ChaosInitiative.SDKLauncher.Models
         {
             if (other is null)
                 return false;
-            
+
             return _mountPath == other._mountPath &&
                    _appId == other._appId &&
                    PrimarySearchPath == other.PrimarySearchPath &&

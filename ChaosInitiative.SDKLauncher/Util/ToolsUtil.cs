@@ -8,7 +8,7 @@ using Steamworks.Data;
 
 namespace ChaosInitiative.SDKLauncher.Util
 {
-    public class ToolsUtil
+    public static class ToolsUtil
     {
         public static AppId ProtonAppId = 1245040;
         public static string ProtonVersion = "Proton 5.13";
