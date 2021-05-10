@@ -78,7 +78,7 @@ namespace ChaosInitiative.SDKLauncher.Models
         /// <returns>Instance of AppConfig using default values</returns>
         public static AppConfig CreateDefaultConfig()
         {
-            return new AppConfig()
+            return new()
             {
                 Profiles = new List<Profile>
                 {

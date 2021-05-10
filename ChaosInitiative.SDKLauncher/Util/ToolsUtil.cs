@@ -40,21 +40,18 @@ namespace ChaosInitiative.SDKLauncher.Util
                 throw new ToolsLaunchException($"Unable to find tool binary '{executablePath}'");
             }
 
-            if (windowsOnly && allowProton)
+            if (windowsOnly && allowProton && OperatingSystem.IsLinux())
             {
                 return LaunchToolWithProton(binDirectory, executableName, args, workingDir);
             }
-            else
-            {
-                var startInfo = new ProcessStartInfo
-                {
-                    FileName = executablePath,
-                    WorkingDirectory = workingDir ?? binDirectory,
-                    Arguments = args
-                };
 
-                return Process.Start(startInfo);
-            }
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = executablePath,
+                WorkingDirectory = workingDir ?? binDirectory,
+                Arguments = args
+            };
+            return Process.Start(startInfo);
         }
 
         /// <summary>
@@ -88,8 +85,10 @@ namespace ChaosInitiative.SDKLauncher.Util
             if (string.IsNullOrWhiteSpace(protonPath))
                 throw new ToolsLaunchException("Failed to create the proton prefix");
 
-            var protonStartInfo = new ProcessStartInfo();
-            protonStartInfo.WorkingDirectory = workingDir ?? binDir;
+            var protonStartInfo = new ProcessStartInfo
+            {
+                WorkingDirectory = workingDir ?? binDir
+            };
 
             if (appid != 0)
                 protonStartInfo.Environment.Add("SteamGameId", appid.ToString());

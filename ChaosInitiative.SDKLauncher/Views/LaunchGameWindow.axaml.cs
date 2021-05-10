@@ -8,6 +8,7 @@ using Avalonia.ReactiveUI;
 using ChaosInitiative.SDKLauncher.Models;
 using ChaosInitiative.SDKLauncher.Util;
 using ChaosInitiative.SDKLauncher.ViewModels;
+using MessageBox.Avalonia;
 using ReactiveUI;
 
 namespace ChaosInitiative.SDKLauncher.Views
@@ -71,8 +72,7 @@ namespace ChaosInitiative.SDKLauncher.Views
                 binPath = Path.Combine(gameRootPath, executableName);
                 if (!File.Exists(binPath))
                 {
-                    var dialog = new NotificationDialog($"Unable to find game binary '{binPath}'");
-                    dialog.ShowDialog(this);
+                    MessageBoxManager.GetMessageBoxStandardWindow("Error", $"Failed to launch game: Unable to find game binary at '{binPath}'").Show();
                     return;
                 }
             }
@@ -99,10 +99,8 @@ namespace ChaosInitiative.SDKLauncher.Views
             }
             catch (ToolsLaunchException e)
             {
-                var dialog = new NotificationDialog(e.Message);
-                dialog.ShowDialog(this);
+                MessageBoxManager.GetMessageBoxStandardWindow("Error", "Failed to launch game: " + e.Message).Show();
             }
-            
             Close();
         }
     }

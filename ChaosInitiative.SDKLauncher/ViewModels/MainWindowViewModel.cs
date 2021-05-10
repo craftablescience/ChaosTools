@@ -47,15 +47,11 @@ namespace ChaosInitiative.SDKLauncher.ViewModels
         
         public MainWindowViewModel()
         {
-
             Activator = new ViewModelActivator();
             
             this.WhenActivated(disposable =>
             {
-                Disposable.Create(() =>
-                {
-                    
-                }).DisposeWith(disposable);
+                Disposable.Create(() => {}).DisposeWith(disposable);
             });
             
             Config = AppConfig.LoadConfigOrCreateDefault();

@@ -28,12 +28,14 @@ namespace ChaosInitiative.SDKLauncher.Views
         {
             get
             {
-                var arguments = "";
+                string arguments;
 
-                var additionalMount = ViewModel.CurrentProfile.AdditionalMount;
+                var additionalMount = CurrentProfile.AdditionalMount;
                 
-                if (additionalMount is not null &&
-                    !string.IsNullOrWhiteSpace(additionalMount.PrimarySearchPathDirectory))
+                if (additionalMount != null &&
+                    !string.IsNullOrWhiteSpace(additionalMount.PrimarySearchPathDirectory) &&
+                    !additionalMount.PrimarySearchPathDirectory.Equals("/") &&
+                    !additionalMount.PrimarySearchPathDirectory.Equals("\\"))
                 {
                     arguments = $"-mountmod \"{additionalMount.PrimarySearchPathDirectory}\"";
                 }
@@ -70,7 +72,8 @@ namespace ChaosInitiative.SDKLauncher.Views
                         "hlmv",
                         Tools.ModelViewer,
                         true,
-                        ViewModel.CurrentProfile.Mod.Mount.MountPath
+                        ViewModel.CurrentProfile.Mod.Mount.MountPath,
+                        allowProton:false
                     )
                 ).DisposeWith(disposables);
 
@@ -82,7 +85,7 @@ namespace ChaosInitiative.SDKLauncher.Views
 
         private void LaunchTool(string executableName, Tools tool, bool windowsOnly = false, string workingDir = null, string binDir = null, bool allowProton = true)
         {
-            binDir ??= ViewModel.CurrentProfile.Mod.Mount.BinDirectory;
+            binDir ??= CurrentProfile.Mod.Mount.BinDirectory;
             workingDir ??= binDir;
 
             if (windowsOnly && allowProton && OperatingSystem.IsLinux())
@@ -94,23 +97,23 @@ namespace ChaosInitiative.SDKLauncher.Views
             string args = tool switch
             {
                 Tools.Hammer => HammerArguments,
-                Tools.ModelViewer => $"-game {ViewModel.CurrentProfile.Mod.Mount.PrimarySearchPath}",
+                Tools.ModelViewer => $"-game {CurrentProfile.Mod.Mount.PrimarySearchPath}",
                 _ => ""
             };
 
             try
             {
-                ToolsUtil.LaunchTool(binDir, executableName, args, windowsOnly, workingDir);
+                ToolsUtil.LaunchTool(binDir, executableName, args, windowsOnly, workingDir, allowProton);
             }
             catch (ToolsLaunchException e)
             {
-                MessageBoxManager.GetMessageBoxStandardWindow("Failed to launch tool", e.Message).Show();
+                MessageBoxManager.GetMessageBoxStandardWindow("Error", "Failed to launch tool: " + e.Message).Show();
             }
         }
 
         private void LaunchGame()
         {
-            var launchGame = new LaunchGameWindow(ViewModel.CurrentProfile);
+            var launchGame = new LaunchGameWindow(CurrentProfile);
             launchGame.ShowDialog(this);
         }
 
@@ -130,7 +133,7 @@ namespace ChaosInitiative.SDKLauncher.Views
 
         private static void InitializeSteamClient(uint appId)
         {
-            if (Application.Current.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            if (Application.Current.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime)
             {
                 throw new Exception("Wrong application lifetime, contact a developer");
             }
@@ -143,11 +146,10 @@ namespace ChaosInitiative.SDKLauncher.Views
             {
                 if (!e.Message.Contains("Steam"))
                     throw;
-
-                // TODO: This doesn't work well with i3wm
-                desktop.MainWindow = new NotificationDialog("Steam error. Please check that steam is running, and you own the intended app.");
+                
                 Directory.CreateDirectory("logs");
                 File.WriteAllText($"logs/steam_error_{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log", e.Message);
+                MessageBoxManager.GetMessageBoxStandardWindow("Error", "Steam Error: Please check that steam is running, and you own the intended app.").Show();
             }
         }
 

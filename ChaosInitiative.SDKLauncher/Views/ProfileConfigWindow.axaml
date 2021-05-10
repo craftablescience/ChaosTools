@@ -21,7 +21,6 @@
     </Design.DataContext>
 
     <DockPanel>
-
 	    <userControls:TitleBar DataContext="SDK Launcher" />
 
         <StackPanel Orientation="Vertical">
@@ -32,26 +31,11 @@
 
             <TextBlock Text="Mod" />
             <Border Classes="SectionBorder">
-                <Grid>
+                <Grid RowDefinitions="auto,auto,auto,auto,auto,auto" ColumnDefinitions="*,*,auto">
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Grid.Row="0"
-                               Grid.Column="0"
-                               Text="Steam App ID" />
+	                <TextBlock Grid.Row="0"
+	                           Grid.Column="0"
+	                           Text="Steam App ID" />
                     <NumericUpDown Grid.Row="1"
                                    Grid.Column="0"
                                    ShowButtonSpinner="False"
@@ -212,7 +196,5 @@
             </StackPanel>
 
         </StackPanel>
-
     </DockPanel>
-
 </Window>

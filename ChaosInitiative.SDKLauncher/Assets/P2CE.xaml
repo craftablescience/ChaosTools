@@ -4,32 +4,11 @@
         xmlns:usercontrols="clr-namespace:ChaosInitiative.SDKLauncher.Views.UserControls">
 
     <Design.PreviewWith>
-
         <DockPanel>
-            
             <usercontrols:TitleBar DataContext="Titlebar Text"/>
 
-            <Grid Width="500"
-                  Height="500">
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50" />
-                    <RowDefinition Height="50" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
-
-
+            <Grid Width="500" Height="500" ColumnDefinitions="*,*,*" RowDefinitions="50,50,auto,auto,auto,auto,auto,auto">
+                
                 <Button Grid.Column="0"
                         Grid.Row="0">
                     Hi, I'm a Button! :)
@@ -78,8 +57,7 @@
                     <TextBlock Text="This is a status bar." />
                     <ProgressBar Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="5" Value="50" MaxHeight="2" />
                 </StackPanel>
-
-
+                
             </Grid>
 
         </DockPanel>
@@ -221,7 +199,6 @@
 
     <!-- Combo box needs a lot of adjustments -->
     <Style Selector="ComboBox>Border>Grid>TextBlock" />
-
     
     <Style Selector="Grid.TitleBar">
         <Setter Property="Background" Value="{DynamicResource ThemeBorderLowBrush}"/>

@@ -67,8 +67,8 @@ namespace ChaosInitiative.SDKLauncher.Models
         {
             get
             {
-                string binPath = $"{MountPath}/bin";
-                string platformSpecificBinPath = $"{binPath}/{MountUtil.GetPlatformString()}";
+                var binPath = $"{MountPath}/bin";
+                var platformSpecificBinPath = $"{binPath}/{MountUtil.GetPlatformString()}";
 
                 if (Directory.Exists(platformSpecificBinPath))
                 {
