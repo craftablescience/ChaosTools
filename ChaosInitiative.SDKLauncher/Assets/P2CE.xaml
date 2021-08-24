@@ -5,8 +5,6 @@
 
     <Design.PreviewWith>
         <DockPanel>
-            <usercontrols:TitleBar DataContext="Titlebar Text"/>
-
             <Grid Width="500" Height="500" ColumnDefinitions="*,*,*" RowDefinitions="50,50,auto,auto,auto,auto,auto,auto">
                 
                 <Button Grid.Column="0"

@@ -6,9 +6,6 @@
         mc:Ignorable="d"
         x:Class="ChaosInitiative.SDKLauncher.Views.AddMountDialog"
         xmlns:userControls="clr-namespace:ChaosInitiative.SDKLauncher.Views.UserControls"
-        ExtendClientAreaToDecorationsHint="True"
-        ExtendClientAreaChromeHints="NoChrome"
-        ExtendClientAreaTitleBarHeightHint="-1"
         WindowStartupLocation="CenterOwner"
         Width="320"
         SizeToContent="Height"
@@ -21,8 +18,6 @@
     </Design.DataContext>
 
     <DockPanel>
-        <userControls:TitleBar DataContext="SDK Launcher" />
-
         <StackPanel Orientation="Vertical">
 
             <CheckBox IsChecked="{Binding UseAppId}" Name="UseAppId">
