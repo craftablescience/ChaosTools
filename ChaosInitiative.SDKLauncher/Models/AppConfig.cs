@@ -54,20 +54,22 @@ namespace ChaosInitiative.SDKLauncher.Models
         }
 
         /// <summary>
-        /// Checks if the config is saved to disk and actually has text inside of it.
+        /// Checks if the config is saved to disk and actually is a config
         /// </summary>
         /// <returns>Whether or not config.json exists in working directory</returns>
         public static bool IsConfigSaved()
 		{
             if (File.Exists(ConfigName))
             {
-                // Check if the config actually has text
-                var contents = File.ReadAllText(ConfigName);
-
-                if (string.IsNullOrWhiteSpace(contents))
+                try
+				{
+                    LoadConfig();
+                    return true;
+				}
+                catch
+				{
                     return false;
-
-                return true;
+				}
             }
 
             // The file doesn't exist so there for it is not saved.
