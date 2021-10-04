@@ -18,6 +18,7 @@ namespace ChaosInitiative.SDKLauncher.Views
         protected Button CloseButton => this.FindControl<Button>("CloseButton");
         protected Button BrowseMountPathButton => this.FindControl<Button>("BrowseMountPathButton");
         protected Button BrowseAdditionalMountButton => this.FindControl<Button>("BrowseAdditionalMountButton");
+        protected ComboBox ProtonVersionsComboBox => this.FindControl<ComboBox>("ProtonVersionsComboBox");
 
         public ProfileConfigWindow()
         {
@@ -46,6 +47,12 @@ namespace ChaosInitiative.SDKLauncher.Views
                                  vm => vm.OnClickBrowseAdditionalMount, 
                                  v => v.BrowseAdditionalMountButton);
 
+                // Disable the combobox if no versions are found
+                if (ToolsUtil.GetInstalledProtonVersions.Count < 1)
+				{
+                    ProtonVersionsComboBox.IsEnabled = false;
+                    ProtonVersionsComboBox.PlaceholderText = "Proton is not detected.";
+				}
             });
         }
         

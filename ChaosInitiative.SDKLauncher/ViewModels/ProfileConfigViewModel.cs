@@ -1,7 +1,11 @@
+using System;
+using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Disposables;
 using ChaosInitiative.SDKLauncher.Models;
+using ChaosInitiative.SDKLauncher.Util;
 using ReactiveUI;
+using Steamworks;
 
 namespace ChaosInitiative.SDKLauncher.ViewModels
 {
@@ -11,7 +15,12 @@ namespace ChaosInitiative.SDKLauncher.ViewModels
 
         public Profile Profile { get; set; }
         public Mount SelectedMount { get; set; }
-        
+
+        public bool ShowProtonSettings { get { return OperatingSystem.IsLinux(); } }
+
+        // I don't know how to make the view be able to access proton versions
+        public IReadOnlyList<int> GetInstalledProtonVersions => ToolsUtil.GetInstalledProtonVersions;
+
         public ReactiveCommand<Unit, Unit> OnClickClose { get; set; }
         public ReactiveCommand<Unit, Unit> OnClickBrowseMountPath { get; set; }
         public ReactiveCommand<Unit, Unit> OnClickBrowseAdditionalMount { get; set; }

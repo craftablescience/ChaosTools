@@ -99,6 +99,41 @@
                     </Button>
                 </Grid>
             </Border>
+            
+            <TextBlock Text="Proton Settings" IsVisible="True" />
+            <Border Classes="SectionBorder" IsVisible="True">
+                <Grid RowDefinitions="auto,auto,auto,auto,auto,auto" ColumnDefinitions="*,*,auto">
+                    <CheckBox Grid.Row="1"
+                              Grid.Column="1"
+                              x:Name="EnableWineD3D"
+                              IsChecked="{Binding Profile.EnableWineD3D}">WineD3D</CheckBox>
+                    <CheckBox Grid.Row="2"
+                              Grid.Column="1"
+                              x:Name="EnableFSync"
+                              IsChecked="{Binding Profile.EnableFSync}">FSync</CheckBox>
+                    <CheckBox Grid.Row="3"
+                              Grid.Column="1"
+                              x:Name="EnableLogging"
+                              IsChecked="{Binding Profile.EnableLogging}">Proton Logging</CheckBox>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Proton Version" />
+                    <ComboBox Grid.Row="1"
+                              Grid.Column="0"
+                              x:Name="ProtonVersionsComboBox"
+                              SelectedItem="{Binding Profile.ProtonAppId}"
+                              Items="{Binding GetInstalledProtonVersions}" />
+
+                    <TextBlock Grid.Row="2"
+                               Grid.Column="0"
+                               Text="Prefix Path" />
+                    <TextBox Grid.Row="3"
+                             Grid.Column="0"
+                             Watermark="Prefix Path"
+                             Text="{Binding Profile.PrefixPath}" />
+                </Grid>
+            </Border>
 
             <!--
 		

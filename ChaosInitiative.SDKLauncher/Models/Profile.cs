@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Text.Json.Serialization;
+using ChaosInitiative.SDKLauncher.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -14,7 +17,14 @@ namespace ChaosInitiative.SDKLauncher.Models
         
         [Reactive]
         public Mount AdditionalMount { get; set; }
-        
+
+        // Proton Settings
+        public int ProtonAppId { get; set; }
+        public string PrefixPath { get; set; }
+        public bool EnableWineD3D { get; set; }
+        public bool EnableFSync { get; set; }
+        public bool EnableLogging { get; set; }
+
         public static Profile GetDefaultProfile()
         {
             return new()
@@ -32,7 +42,12 @@ namespace ChaosInitiative.SDKLauncher.Models
                         IsRequired = true
                     }
                 },
-                AdditionalMount = new Mount()
+                AdditionalMount = new Mount(),
+                ProtonAppId = ToolsUtil.GetInstalledProtonVersions.Count > 0 ? ToolsUtil.GetInstalledProtonVersions[0] : 0,
+                PrefixPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ChaosSDKLauncher"),
+                EnableWineD3D = false,
+                EnableFSync = false,
+                EnableLogging = false
             };
         }
 

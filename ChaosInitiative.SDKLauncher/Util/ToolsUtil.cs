@@ -13,7 +13,34 @@ namespace ChaosInitiative.SDKLauncher.Util
         public static AppId ProtonAppId = 1245040;
         public static string ProtonVersion = "Proton 5.13";
         public static string SteamPathLinux = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ".local/share/Steam/");
-        
+
+        // List of all the currently supported proton versions
+        public static Dictionary<int, string> ProtonVersions = new()
+        {
+            { 1580130, "Proton 6.3" },
+            { 1420170, "Proton 5.13" },
+            { 1245040, "Proton 5.0" },
+            { 1113280, "Proton 4.11" },
+            { 1054830, "Proton 4.2" },
+            { 1493710, "Proton Experimental" }
+        };
+
+        public static IReadOnlyList<int> GetInstalledProtonVersions
+        {
+            get
+            {
+                List<int> versions = new List<int>();
+
+                foreach (var app in ToolsUtil.ProtonVersions)
+                {
+                    //if (SteamApps.IsAppInstalled(app.Key))
+                    versions.Add(app.Key);
+                }
+
+                return versions;
+            }
+        }
+
         /// <summary>
         /// Launches an arbitrary tool
         /// </summary>
