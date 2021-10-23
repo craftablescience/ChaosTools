@@ -58,7 +58,7 @@ namespace ChaosInitiative.SDKLauncher.Views
                 // This sets up all the correct paths to use to launch the tools and game
                 // Note: This looks like it won't work here, but it really does, I promise
                 //       Moving it outside this function crashes the application on load
-                InitializeSteamClient((uint)ViewModel.CurrentProfile.Mod.Mount.AppId);
+                //InitializeSteamClient((uint)ViewModel.CurrentProfile.Mod.Mount.AppId);
                 
                 ViewModel.OnClickEditProfile.Subscribe(_ => EditProfile()).DisposeWith(disposables);
                 ViewModel.OnClickOpenHammer.Subscribe(_ => 
@@ -129,28 +129,6 @@ namespace ChaosInitiative.SDKLauncher.Views
                 DataContext = new ProfileConfigViewModel(CurrentProfile)
             };
             profileConfigWindow.ShowDialog(this);
-        }
-
-        private static void InitializeSteamClient(uint appId)
-        {
-            if (Application.Current.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime)
-            {
-                throw new Exception("Wrong application lifetime, contact a developer");
-            }
-
-            try
-            {
-                SteamClient.Init(appId);
-            }
-            catch (Exception e)
-            {
-                if (!e.Message.Contains("Steam"))
-                    throw;
-                
-                Directory.CreateDirectory("logs");
-                File.WriteAllText($"logs/steam_error_{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log", e.Message);
-                MessageBoxManager.GetMessageBoxStandardWindow("Error", "Steam Error: Please check that steam is running, and you own the intended app.").Show();
-            }
         }
 
         private enum Tools
