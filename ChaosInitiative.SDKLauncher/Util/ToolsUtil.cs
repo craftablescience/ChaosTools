@@ -31,10 +31,10 @@ namespace ChaosInitiative.SDKLauncher.Util
             {
                 List<int> versions = new List<int>();
 
-                foreach (var app in ToolsUtil.ProtonVersions)
+                foreach (var app in ProtonVersions)
                 {
-                    //if (SteamApps.IsAppInstalled(app.Key))
-                    versions.Add(app.Key);
+                    if (SteamApps.IsAppInstalled(app.Key))
+                        versions.Add(app.Key);
                 }
 
                 return versions;

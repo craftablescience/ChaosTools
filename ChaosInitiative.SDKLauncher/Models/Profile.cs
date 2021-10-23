@@ -43,7 +43,7 @@ namespace ChaosInitiative.SDKLauncher.Models
                     }
                 },
                 AdditionalMount = new Mount(),
-                //ProtonAppId = ToolsUtil.GetInstalledProtonVersions.Count > 0 ? ToolsUtil.GetInstalledProtonVersions[0] : 0,
+                ProtonAppId = ToolsUtil.GetInstalledProtonVersions.Count > 0 ? ToolsUtil.GetInstalledProtonVersions[0] : 0,
                 PrefixPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ChaosSDKLauncher"),
                 EnableWineD3D = false,
                 EnableFSync = false,
