@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using ChaosInitiative.SDKLauncher.Views;
 using Steamworks;
 using Steamworks.Data;
 
@@ -89,7 +90,7 @@ namespace ChaosInitiative.SDKLauncher.Util
         /// <param name="args">Argument string</param>
         /// <param name="workingDir">Working directory to launch the app from</param>
         /// <param name="appid">AppID to tell steam that we're launching with</param>
-        /// <param name="use_wined3d">Use WineD3D instead of dxvk. Some apps break with dxvk (e.g. hammer)</param>
+        /// <param name="use_wined3d">Use WineD3D instead of dxvk regardless of user settings. Some apps break with dxvk (e.g. hammer)</param>
         /// <param name="prefix">Proton prefix to use, defaults to ~/.config/ChaosSDKLauncher if not specified</param>
         /// <returns></returns>
         public static Process LaunchToolWithProton(string binDir, string exe, string args = "",
@@ -120,12 +121,14 @@ namespace ChaosInitiative.SDKLauncher.Util
             if (appid != 0)
                 protonStartInfo.Environment.Add("SteamGameId", appid.ToString());
 
-            protonStartInfo.Environment.Add("PROTON_LOG", "1");
+            if (MainWindow.Instance.CurrentProfile.EnableLogging)
+                protonStartInfo.Environment.Add("PROTON_LOG", "1");
+
             protonStartInfo.Environment.Add("STEAM_COMPAT_DATA_PATH", prefix);
             protonStartInfo.Environment.Add("STEAM_COMPAT_CLIENT_INSTALL_PATH", 
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ".steam/"));
 
-            if (use_wined3d)
+            if (use_wined3d || MainWindow.Instance.CurrentProfile.EnableWineD3D)
                 protonStartInfo.Environment.Add("PROTON_USE_WINED3D", "1");
 
             protonStartInfo.FileName = protonPath;

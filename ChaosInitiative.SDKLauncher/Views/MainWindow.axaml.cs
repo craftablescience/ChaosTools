@@ -18,11 +18,13 @@ namespace ChaosInitiative.SDKLauncher.Views
 {
     public class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
+        public static MainWindow Instance;
+
         protected Button EditProfileButton => this.FindControl<Button>("EditProfileButton");
         protected Button OpenToolsModeButton => this.FindControl<Button>("OpenToolsModeButton");
         protected Button OpenGameButton => this.FindControl<Button>("OpenGameButton");
 
-        private Profile CurrentProfile => ViewModel.CurrentProfile;
+        public Profile CurrentProfile => ViewModel.CurrentProfile;
 
         private string HammerArguments
         {
@@ -52,6 +54,8 @@ namespace ChaosInitiative.SDKLauncher.Views
         {
             AvaloniaXamlLoader.Load(this);
             this.AttachDevTools();
+
+            Instance = this;
 
             this.WhenActivated(disposables =>
             {
