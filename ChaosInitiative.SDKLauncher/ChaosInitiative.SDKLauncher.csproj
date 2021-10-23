@@ -34,11 +34,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="steam_api64.dll" />
+    <None Remove="steam_appid.txt" />
     <Content Include="steam_api64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Remove="libsteam_api.so" />
     <Content Include="libsteam_api.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="steam_appid.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
